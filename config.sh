@@ -12,3 +12,4 @@ cd code
 
 #Install requirements
 python3 -m pip install -r requirements.txt
+python3 -m pip install streamlit plotly_express

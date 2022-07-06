@@ -20,10 +20,10 @@ download_md_command = "./scripts/download_cyclegan_model.sh {}".format(model)
 os.system(download_md_command)
 
 model_pretrained = model + "_pretrained"
-test_command = "python3 test.py --dataroot datasets/{}/testA --name {} --model test --no_dropout".format(model, model_pretrained)
+test_command = "python3 test.py --dataroot datasets/{}/testA --name {} --model test --no_dropout --gpu_ids -1".format(model, model_pretrained)
 
 img = plt.imread('./results/monet2photo_pretrained/test_latest/images/00550_fake.png')
-plt.imshow(img)
+st.write(img)
 
 img = plt.imread('./results/monet2photo_pretrained/test_latest/images/00550_real.png')
-plt.imshow(img)
+st.write(img)
