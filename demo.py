@@ -29,7 +29,7 @@ def get_img_list(model):
 
 
 #Available datasets
-models = ["apple2orange", "summer2winter_yosemite", "horse2zebra", "monet2photo", "cezanne2photo", "ukiyoe2photo", "vangogh2photo", "maps", "facades", "iphone2dslr_flower", "ae_photos"]
+models = ["apple2orange", "summer2winter_yosemite", "horse2zebra", "monet2photo", "iphone2dslr_flower"]
 
 st.title("CycleGAN online demo")
 model = st.selectbox('Choose the model and dataset to use', models, index=3)
@@ -57,5 +57,8 @@ with col1:
 with col2:
     img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(model, sample))
     st.image(img, caption="real")
+
+#Upload your own sample
+
 
 st.text("Credit: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix")
