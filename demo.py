@@ -45,6 +45,13 @@ def test(model, force=False):
     else:
         os.system(test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B))
 
+def test_single(model):
+
+    model_pretrained = model + "_pretrained"
+    #TODO: per model folders
+    test_command = "python3 test.py --dataroot user_imgs --name {} --model test --direction {} --no_dropout --gpu_ids -1"  
+    os.system(test_command.format())
+
 def get_img_list(model):
     img_list = os.listdir("results/{}_pretrained/test_latest/images".format(model))
     img_list = [img[:-9] for img in img_list]
@@ -69,7 +76,6 @@ st.subheader("Visualize two examples")
 col1, col2 = st.columns(2)
 
 #Get img list
-
 mode = st.selectbox("Select mode", ["A2B","B2A"])
 if mode == "A2B":
     img_list = get_img_list(model)
@@ -89,16 +95,24 @@ with col2:
     img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(used_model, sample))
     st.image(img, caption="real")
 
+"""
 #Upload your own sample
-file = st.file_uploader(label="Upload your own sample to conver from a A to B (warning: reloads website!", type=["png", "jpg"],
+file = st.file_uploader(label="Upload your own sample", type=["png", "jpg"],
         accept_multiple_files=False)
+mod = st.selectbox("Select model", ["A2B", "B2A"])
 
-test_dir = "./datasets/{}/testB".format(model)
+if mod == "A2B":
+    chosen_model = model
+else:
+    chosen_model = get_reverse_model(model)
+
+user_imgs = "usr_imgs"
 if file is not None:
-    with open(os.path.join(test_dir, "0.jpg"), "wb") as f:
+    with open(os.path.join(user_imgs, "0.jpg"), "wb") as f:
         f.write(file.getbuffer())
 
-    test(model, force=True)
+    test_single(chosen_model)
+"""
 
 
 st.text("Credit: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix")
