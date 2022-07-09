@@ -9,11 +9,25 @@ def download_dataset(model):
     condition = "[[ ! -d datasets/{} ]] &&".format(model)
     os.system(condition + download_ds_command)
 
+def get_reverse_model(model_name):
+    if model_name == "apple2orange":
+        return "orange2apple"
+    elif model_name == "summer2winter_yosemite":
+        return "winter2summer_yosemite"
+    elif model_name == "horse2zebra":
+        return "zebra2horse"
+    elif model_name == "monet2photo":
+        return "style_monet"
+    else:
+        print("This model has no reverse!")
+
 def download_model(model):
-    download_md_command = "./scripts/download_cyclegan_model.sh {}".format(model)
+    download_a2b_command = "./scripts/download_cyclegan_model.sh {} && ".format(model)
+    reverse = get_reverse_model(model)
+    download_b2a_command = "./scripts/download_cyclegan_model.sh {}".format(reverse)
     #Check model has not been downloaded already
     condition = "[[ ! -f checkpoints/{}_pretrained/latest_net_G.pth ]] &&".format(model)
-    os.system(condition + download_md_command)
+    os.system(condition + download_a2b_command + download_b2a_command)
 
 def test(model, force=False):
 
@@ -21,20 +35,21 @@ def test(model, force=False):
     nr_test_B = len(os.listdir("datasets/{}/testB".format(model)))
 
     model_pretrained = model + "_pretrained"
-    test_command = "python3 test.py --dataroot datasets/{}/{} --name {} --model test --direction {} --num_test {} --no_dropout --gpu_ids -1"
+    rev_model_pretrained = get_reverse_model(model) + "_pretrained"
+
+    test_command = "python3 test.py --dataroot datasets/{}/{} --name {} --model test --direction {} --num_test {} --no_dropout --gpu_ids -1"        
     condition = "[[ ! \"$(ls -A results/{}_pretrained/test_latest/images)\" ]] &&".format(model)
     
     if not force:
-        os.system(condition + test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", model_pretrained,"BtoA",nr_test_B))
+        os.system(condition + test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B))
     else:
-        os.system(test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", model_pretrained,"BtoA",nr_test_B))
+        os.system(test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B))
 
 def get_img_list(model):
     img_list = os.listdir("results/{}_pretrained/test_latest/images".format(model))
     img_list = [img[:-9] for img in img_list]
     img_list = list(set(img_list))
     return img_list
-
 
 #Available datasets
 models = ["apple2orange", "summer2winter_yosemite", "horse2zebra", "monet2photo", "iphone2dslr_flower"]
@@ -54,16 +69,24 @@ st.subheader("Visualize two examples")
 col1, col2 = st.columns(2)
 
 #Get img list
-img_list = get_img_list(model)
+
+mode = st.selectbox("Select mode", ["A2B","B2A"])
+if mode == "A2B":
+    img_list = get_img_list(model)
+    used_model = model
+else:
+    img_list = get_img_list(get_reverse_model(model))
+    used_model = get_reverse_model(model)
+
 sample = st.selectbox("Select 2 samples", img_list)
 sample = sample
 
 with col1:
-    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_fake.png'.format(model, sample))
+    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_fake.png'.format(used_model, sample))
     st.image(img, caption="fake")
 
 with col2:
-    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(model, sample))
+    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(used_model, sample))
     st.image(img, caption="real")
 
 #Upload your own sample
