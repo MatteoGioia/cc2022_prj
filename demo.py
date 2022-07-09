@@ -25,11 +25,9 @@ def test(model, force=False):
     condition = "[[ ! \"$(ls -A results/{}_pretrained/test_latest/images)\" ]] &&".format(model)
     
     if not force:
-        os.system(condition + test_command.format(model, "testaA", model_pretrained,"AtoB",nr_test_A) + test_command.format(model, "testaB", model_pretrained,"BtoA",nr_test_B))
+        os.system(condition + test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", model_pretrained,"BtoA",nr_test_B))
     else:
-         os.system(test_command.format(model, "testaA", model_pretrained,"AtoB",nr_test_A) + test_command.format(model, "testaB", model_pretrained,"BtoA",nr_test_B))
-
-
+        os.system(test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", model_pretrained,"BtoA",nr_test_B))
 
 def get_img_list(model):
     img_list = os.listdir("results/{}_pretrained/test_latest/images".format(model))
