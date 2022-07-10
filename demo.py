@@ -106,22 +106,21 @@ else:
 
 if file is not None:
     #Create directory for user files
-    usr_dir = "{}/{}".format(chosen_model, file.name)
-    os.system("mdkir {}".format(usr_dir))
-    with open(os.path.join(usr_dir, "0.jpg"), "wb") as f:
+    usr_dir = "usr_imgs/{}/{}".format(chosen_model, file.name[:-4])
+    #TODO: handle already existing directory / file
+    os.makedirs(usr_dir)
+    with open(os.path.join(usr_dir, file.name), "wb") as f:
         f.write(file.getbuffer())
 
     test_single(chosen_model, usr_dir, direction = mod)
 
-"""
-usr_col1, usr_col2 = st.columns(2)
-with usr_col1:
-    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_fake.png'.format(used_model, sample))
-    st.image(img, caption="fake")
+    usr_col1, usr_col2 = st.columns(2)
+    with usr_col1:
+        img = plt.imread('./results/{}_pretrained/test_latest/images/{}_fake.png'.format(chosen_model, file.name[:-4])) 
+        st.image(img, caption="fake")
 
-with usr_col2:
-    img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(used_model, sample))
-    st.image(img, caption="real")
-""" 
+    with usr_col2:
+        img = plt.imread('./results/{}_pretrained/test_latest/images/{}_real.png'.format(chosen_model, file.name[:-4]))
+        st.image(img, caption="real") 
 
 st.text("Credit: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix")
