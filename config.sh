@@ -14,9 +14,9 @@ cd code
 python3 -m pip install -r requirements.txt
 python3 -m pip install streamlit matplotlib plotly_express
 
-#make file executable (for some reason this one is not)
-chmod +x ./scripts/download_cyclegan_mode.sh
+wget https://raw.githubusercontent.com/MatteoGioia/cc2022_prj/main/demo.py 
+chown ec2-user demo.py
 
-#wget https://raw.githubusercontent.com/MatteoGioia/cc2022_prj/main/demo.py > demo.py
-#streamlit run demo.py
-
+mkdir .streamlit
+wget https://raw.githubusercontent.com/MatteoGioia/cc2022_prj/main/config.toml
+mv config.toml .streamlit
