@@ -1,4 +1,4 @@
-#CycleGAN online demo
+# CycleGAN online demo
 
 Simple CycleGAN online demo for Cloud Computing 2022 using AWS. 
 
