@@ -36,15 +36,21 @@ def test(model, force=False):
     nr_test_B = len(os.listdir("datasets/{}/testB".format(model)))
 
     model_pretrained = model + "_pretrained"
-    rev_model_pretrained = get_reverse_model(model) + "_pretrained"
+    rev_model_pretrained = get_reverse_model(model) + "_pretrained" if model != "iphone2dslr_flower" else None
 
     test_command = "python3 test.py --dataroot datasets/{}/{} --name {} --model test --direction {} --num_test {} --no_dropout --gpu_ids -1"        
     condition = "[[ ! \"$(ls -A results/{}_pretrained/test_latest/images)\" ]] &&".format(model)
     
-    if not force:
-        os.system(condition + test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B))
+    if rev_model_pretrained is not None:
+        command = test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B)
+        if not force:
+            command = condition + command
     else:
-        os.system(test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A) + " && " + test_command.format(model, "testB", rev_model_pretrained,"BtoA",nr_test_B))
+        command = test_command.format(model, "testA", model_pretrained,"AtoB",nr_test_A)
+        if not force:
+            command = condition + command
+
+    os.system(command)
 
 def test_single(model, usr_dir, direction):
 
